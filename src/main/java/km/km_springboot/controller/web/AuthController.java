@@ -40,4 +40,15 @@ public class AuthController {
         
         return "auth/login";
     }
+    
+    // 로그아웃 확인 페이지를 보여주는 메소드
+    @GetMapping("/logout")
+    public String logout() {
+        // 인증되지 않은 사용자는 로그인 페이지로 리디렉션
+        if (!authService.isAuthenticated()) {
+            return "redirect:/auth/login";
+        }
+        
+        return "auth/logout";
+    }
 }

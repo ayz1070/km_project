@@ -10,7 +10,13 @@
 ```bash
 git clone <repository-url> && cd km_springboot
 ./gradlew clean build
+
+# 1. H2 서버 시작 (필수)
+./start-h2-server.sh
+
+# 2. 애플리케이션 실행
 ./gradlew bootRun
+
 # H2 콘솔: http://localhost:8080/h2-console
 ```
 
@@ -68,11 +74,46 @@ git checkout main && git merge feature/새기능명
 - **fix**: 버그 수정  
 - **docs**: 문서 수정
 
+## 🗄️ H2 데이터베이스 서버 모드
+
+### H2 서버 시작/중지
+```bash
+# H2 서버 시작
+./start-h2-server.sh
+
+# H2 서버 중지
+./stop-h2-server.sh
+
+# H2 서버 상태 확인
+ps aux | grep h2
+```
+
+### H2 Console 접속 정보
+- **URL**: http://localhost:8080/h2-console
+- **JDBC URL**: `jdbc:h2:tcp://localhost:9092/./data/kmdb`
+- **Username**: `sa`
+- **Password**: `admin123`
+
+### 데이터 지속성
+- **서버 모드**: 독립적인 H2 서버 프로세스로 실행
+- **TCP 연결**: 9092 포트를 통한 네트워크 연결
+- **데이터 저장**: `./data` 폴더에 데이터베이스 파일 저장
+
 ## 🚨 주요 트러블슈팅
+
+### H2 서버 연결 실패
+```bash
+# H2 서버가 실행 중인지 확인
+ps aux | grep h2
+
+# 수동으로 H2 서버 시작
+./start-h2-server.sh
+```
 
 ### H2 콘솔 접속 불가
 ```properties
 spring.h2.console.enabled=true  
+spring.h2.console.settings.web-allow-others=true
 # URL: http://localhost:8080/h2-console
 ```
 
