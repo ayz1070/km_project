@@ -1,0 +1,90 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### 🔐 보안 관련 (중요!) ###
+*.env
+.env.*
+!.env.example
+application-local.yml
+application-local.properties
+application-dev.yml
+application-dev.properties
+**/secrets/
+**/config/secrets.yml
+
+### 📊 데이터베이스 관련 ###
+*.db
+*.sqlite
+*.sqlite3
+/data/
+/logs/
+*.log
+*.log.*
+
+### 📦 의존성 및 캐시 ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+### 🔧 도구별 설정 ###
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+### 🚀 배포 관련 ###
+/target/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### 📝 문서 관련 ###
+*.pid
+*.seed
+*.pid.lock
+/coverage/
+/.nyc_output
