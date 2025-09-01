@@ -4,6 +4,8 @@ import km.km_springboot.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +26,12 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
     
+    // AuthenticationManager 빈 등록 (API 로그인에서 사용)
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+    
     // HTTP 보안 설정을 구성하는 SecurityFilterChain 빈 등록
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -32,6 +40,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll() // 정적 자원 및 H2 콘솔 허용
                 .requestMatchers("/auth/login", "/auth/signup").permitAll() // 로그인, 회원가입 페이지 허용
+                .requestMatchers("/api/auth/login").permitAll() // API 로그인 허용
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger UI 허용
                 .requestMatchers("/admin/**").hasRole("ADMIN") // '/admin/**' 경로는 'ADMIN' 역할 필요
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
             )
@@ -52,7 +62,7 @@ public class SecurityConfig {
             )
             .userDetailsService(userDetailsService) // 커스텀 UserDetailsService 사용
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/h2-console/**") // H2 콘솔 CSRF 보호 예외
+                .ignoringRequestMatchers("/h2-console/**", "/api/**") // H2 콘솔 및 API CSRF 보호 예외
             )
             .headers(headers -> headers
                 .frameOptions().sameOrigin() // H2 콘솔 frameOptions 설정

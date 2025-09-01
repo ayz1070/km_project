@@ -46,4 +46,9 @@ public class AuthService {
             userService.updateLastLoginAt(username);
         }
     }
+    
+    // 특정 사용자의 마지막 로그인 시간을 업데이트
+    public void updateLastLoginAt(String username) {
+        userService.updateLastLoginAt(username);
+    }
 }
