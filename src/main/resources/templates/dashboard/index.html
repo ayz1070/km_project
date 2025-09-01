@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대시보드 - KM Spring Boot</title>
+    <title>KOREA MARKERS</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,147 +16,416 @@
 
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --light-gray: #f8f9fa;
-            --dark-text: #212529;
-            --border-color: #dee2e6;
-            --card-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+            --primary-navy: #1a365d;
+            --primary-blue: #2b77ad;
+            --light-gray: #f5f7fa;
+            --dark-gray: #4a5568;
+            --white: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --border-light: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: var(--light-gray);
-            color: var(--dark-text);
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
 
         .navbar {
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            padding: 1rem 0;
         }
 
         .navbar-brand {
+            font-size: 1.5rem;
             font-weight: 700;
+            color: var(--primary-navy) !important;
+            text-decoration: none;
         }
 
-        .main-content {
-            padding-top: 4rem;
-            padding-bottom: 4rem;
+        .navbar-nav .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem !important;
+            transition: color 0.3s ease;
         }
 
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-blue) !important;
+        }
+
+        /* Hero Section */
         .hero-section {
-            background-color: white;
-            padding: 4rem 2rem;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--card-shadow);
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            color: var(--white);
         }
 
-        .hero-section h1 {
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 54, 93, 0.8);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
             font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
         }
 
-        .info-card {
-            background-color: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
+        .hero-subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Business Sections */
+        .business-section {
+            padding: 5rem 0;
+            background: var(--light-gray);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary-navy);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        .business-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             height: 100%;
         }
 
-        .info-card h5 {
-            font-weight: 500;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.5rem;
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .business-card .icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 1.5rem;
         }
 
-        .info-card ul {
-            padding-left: 0;
-            list-style: none;
+        .business-card .icon i {
+            font-size: 1.5rem;
+            color: var(--white);
         }
 
-        .info-card ul li {
-            margin-bottom: 0.75rem;
+        .business-card h4 {
+            color: var(--primary-navy);
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
+        .business-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* User Info Section */
+        .user-info-section {
+            padding: 4rem 0;
+            background: var(--white);
+        }
+
+        .info-card {
+            background: var(--light-gray);
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .info-card h5 {
+            color: var(--primary-navy);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .info-value {
+            color: var(--text-light);
+        }
+
+        /* Footer */
         .footer {
-            background-color: #343a40;
-            color: white;
-            padding: 2rem 0;
+            background: var(--primary-navy);
+            color: var(--white);
+            padding: 3rem 0;
             text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+            font-weight: 300;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .business-card {
+                margin-bottom: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">MARKERS</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i>
-                            <span sec:authentication="principal.fullName"></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li>
-                                <form th:action="@{/auth/logout}" method="post" class="d-inline">
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="bi bi-box-arrow-right me-2"></i>로그아웃
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">KOREA MARKERS</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#company">회사소개</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#business">주요사업</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">제품 문의</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#resources">자료실</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span sec:authentication="principal.fullName"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-box-arrow-right me-2"></i>로그아웃
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <main class="main-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
         <div class="container">
-            <div class="hero-section text-center">
-                <h1 class="display-5">환영합니다!</h1>
-                <p class="lead">
-                    <strong th:text="${user.fullName}">사용자</strong>님, KOREA MARKER 로그인 시스템에 오신 것을 환영합니다.
+            <div class="hero-content">
+                <h1 class="hero-title">혁신적인 기술로<br>미래를 이끌어가는</h1>
+                <p class="hero-subtitle">
+                    <strong th:text="${user.fullName}">사용자</strong>님, KOREA MARKERS에 오신 것을 환영합니다.<br>
+                    최첨단 기술과 전문성으로 고객의 성공을 지원합니다.
                 </p>
             </div>
+        </div>
+    </section>
 
+    <!-- Business Section -->
+    <section class="business-section" id="business">
+        <div class="container">
+            <div class="section-title">
+                <h2>주요 사업 분야</h2>
+                <p>다양한 산업 분야에서 전문적인 솔루션을 제공합니다</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="business-card">
+                        <div class="icon">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                        <h4>시스템 통합</h4>
+                        <p>최신 기술을 바탕으로 한 시스템 통합 솔루션을 제공하며, 고객의 비즈니스 효율성을 극대화합니다.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="business-card">
+                        <div class="icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4>보안 솔루션</h4>
+                        <p>강력한 보안 시스템으로 고객의 중요한 데이터와 시스템을 안전하게 보호합니다.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="business-card">
+                        <div class="icon">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                        </div>
+                        <h4>클라우드 서비스</h4>
+                        <p>안정적이고 확장 가능한 클라우드 인프라를 통해 비즈니스 연속성을 보장합니다.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="business-card">
+                        <div class="icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h4>데이터 분석</h4>
+                        <p>빅데이터와 AI 기술을 활용하여 비즈니스 인사이트를 제공하고 의사결정을 지원합니다.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="business-card">
+                        <div class="icon">
+                            <i class="bi bi-phone"></i>
+                        </div>
+                        <h4>모바일 솔루션</h4>
+                        <p>모바일 환경에 최적화된 애플리케이션과 서비스를 개발하고 제공합니다.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="business-card">
+                        <div class="icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <h4>기술 지원</h4>
+                        <p>전문적인 기술 지원팀이 24/7 고객 서비스를 제공하여 안정적인 운영을 보장합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Info Section -->
+    <section class="user-info-section" id="company">
+        <div class="container">
+            <div class="section-title">
+                <h2>사용자 정보</h2>
+                <p>현재 로그인된 사용자의 상세 정보입니다</p>
+            </div>
             <div class="row g-4">
                 <div class="col-lg-6">
                     <div class="info-card">
-                        <h5><i class="bi bi-person-vcard me-2"></i>사용자 정보</h5>
-                        <ul>
-                            <li><strong>사용자명:</strong> <span th:text="${user.username}"></span></li>
-                            <li><strong>이메일:</strong> <span th:text="${user.email}"></span></li>
-                            <li><strong>권한:</strong> <span th:text="${user.role.name}"></span></li>
-                            <li><strong>상태:</strong> <span th:text="${user.status.description}"></span></li>
-                        </ul>
+                        <h5><i class="bi bi-person-vcard me-2"></i>계정 정보</h5>
+                        <div class="info-item">
+                            <span class="info-label">사용자명</span>
+                            <span class="info-value" th:text="${user.username}">username</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">이메일</span>
+                            <span class="info-value" th:text="${user.email}">email@example.com</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">권한</span>
+                            <span class="info-value" th:text="${user.role.name}">USER</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">계정 상태</span>
+                            <span class="info-value" th:text="${user.status.description}">활성</span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="info-card">
-                        <h5><i class="bi bi-hdd-stack me-2"></i>시스템 정보</h5>
-                        <ul>
-                            <li><strong>현재 시간:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span></li>
-                            <li><strong>마지막 로그인:</strong>
-                                <span th:if="${user.lastLoginAt}" th:text="${#temporals.format(user.lastLoginAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
-                                <span th:unless="${user.lastLoginAt}" class="text-muted">첫 로그인</span>
-                            </li>
-                        </ul>
+                        <h5><i class="bi bi-clock-history me-2"></i>접속 정보</h5>
+                        <div class="info-item">
+                            <span class="info-label">현재 시간</span>
+                            <span class="info-value" th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2025-01-01 12:00:00</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">마지막 로그인</span>
+                            <span class="info-value">
+                                <span th:if="${user.lastLoginAt}" th:text="${#temporals.format(user.lastLoginAt, 'yyyy-MM-dd HH:mm:ss')}">2025-01-01 11:30:00</span>
+                                <span th:unless="${user.lastLoginAt}">첫 로그인</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
+    <!-- Footer -->
     <footer class="footer">
-        <p class="mb-0">&copy; 2025 KOREA MARKERS. All Rights Reserved.</p>
+        <div class="container">
+            <p>&copy; 2025 KOREA MARKERS. All Rights Reserved.</p>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->
