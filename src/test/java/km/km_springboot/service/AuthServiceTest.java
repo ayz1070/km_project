@@ -6,10 +6,10 @@ import km.km_springboot.entity.User;
 import km.km_springboot.entity.UserStatus;
 import km.km_springboot.repository.RoleRepository;
 import km.km_springboot.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,30 +36,32 @@ class AuthServiceTest {
     @Autowired
     private RoleRepository roleRepository;
 
-    private User testUser;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    void setUp() {
-        // SecurityContext 초기화
-        SecurityContextHolder.clearContext();
+    // No @BeforeEach or @AfterEach for data setup/teardown
 
-        // 테스트용 역할 생성
-        Role userRole = Role.builder()
-                .name("USER")
-                .description("일반 사용자")
-                .build();
-        roleRepository.save(userRole);
+    private User createAndSaveUniqueUser(String usernamePrefix) {
+        String uniqueUsername = usernamePrefix + UUID.randomUUID().toString().substring(0, 8);
+        String uniqueEmail = uniqueUsername + "@example.com";
 
-        // 테스트용 사용자 생성
-        testUser = User.builder()
-                .username("testuser")
+        Role userRole = roleRepository.findByName("USER").orElseGet(() -> {
+            Role newRole = Role.builder()
+                    .name("USER")
+                    .description("일반 사용자")
+                    .build();
+            return roleRepository.save(newRole);
+        });
+
+        User user = User.builder()
+                .username(uniqueUsername)
                 .password("password123")
-                .email("test@example.com")
+                .email(uniqueEmail)
                 .fullName("테스트 사용자")
                 .status(UserStatus.ACTIVE)
                 .role(userRole)
                 .build();
-        userRepository.save(testUser);
+        return userRepository.save(user);
     }
 
     @Test
@@ -73,8 +76,9 @@ class AuthServiceTest {
     @Test
     void 인증된_상태에서_isAuthenticated_호출() {
         // given
+        User user = createAndSaveUniqueUser("authTestUser");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "testuser", "password123", 
+                user.getUsername(), "password123", 
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -97,8 +101,9 @@ class AuthServiceTest {
     @Test
     void 인증된_상태에서_getCurrentUsername_호출() {
         // given
+        User user = createAndSaveUniqueUser("authTestUser");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "testuser", "password123", 
+                user.getUsername(), "password123", 
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -106,7 +111,7 @@ class AuthServiceTest {
         String username = authService.getCurrentUsername();
 
         // then
-        assertThat(username).isEqualTo("testuser");
+        assertThat(username).isEqualTo(user.getUsername());
     }
 
     @Test
@@ -121,8 +126,9 @@ class AuthServiceTest {
     @Test
     void 인증된_상태에서_getCurrentUser_호출() {
         // given
+        User user = createAndSaveUniqueUser("authTestUser");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "testuser", "password123", 
+                user.getUsername(), "password123", 
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -131,15 +137,16 @@ class AuthServiceTest {
 
         // then
         assertThat(currentUser).isNotNull();
-        assertThat(currentUser.getUsername()).isEqualTo("testuser");
-        assertThat(currentUser.getEmail()).isEqualTo("test@example.com");
+        assertThat(currentUser.getUsername()).isEqualTo(user.getUsername());
+        assertThat(currentUser.getEmail()).isEqualTo(user.getEmail());
     }
 
     @Test
     void 현재_인증된_사용자의_마지막_로그인_시간_업데이트() {
         // given
+        User user = createAndSaveUniqueUser("authTestUser");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "testuser", "password123", 
+                user.getUsername(), "password123", 
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
@@ -149,7 +156,7 @@ class AuthServiceTest {
         authService.updateLastLoginAt();
 
         // then
-        User updatedUser = userRepository.findByUsername("testuser").get();
+        User updatedUser = userRepository.findByUsername(user.getUsername()).get();
         assertThat(updatedUser.getLastLoginAt()).isNotNull();
         assertThat(updatedUser.getLastLoginAt()).isAfterOrEqualTo(beforeUpdate);
     }
@@ -163,13 +170,14 @@ class AuthServiceTest {
     @Test
     void 특정_사용자명으로_마지막_로그인_시간_업데이트() {
         // given
+        User user = createAndSaveUniqueUser("authTestUser");
         LocalDateTime beforeUpdate = LocalDateTime.now();
 
         // when
-        authService.updateLastLoginAt("testuser");
+        authService.updateLastLoginAt(user.getUsername());
 
         // then
-        User updatedUser = userRepository.findByUsername("testuser").get();
+        User updatedUser = userRepository.findByUsername(user.getUsername()).get();
         assertThat(updatedUser.getLastLoginAt()).isNotNull();
         assertThat(updatedUser.getLastLoginAt()).isAfterOrEqualTo(beforeUpdate);
     }

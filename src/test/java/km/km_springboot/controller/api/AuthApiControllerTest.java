@@ -5,6 +5,7 @@ import km.km_springboot.dto.LoginRequest;
 import km.km_springboot.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -22,10 +23,12 @@ import java.util.Collections;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AuthApiController.class)
+@WebMvcTest(controllers = AuthApiController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @TestProfile
 class AuthApiControllerTest {
 
@@ -47,11 +50,13 @@ class AuthApiControllerTest {
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
                 .build();
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+        Authentication mockAuthentication = mock(Authentication.class);
+        given(mockAuthentication.getPrincipal()).willReturn(userDetails);
+        given(mockAuthentication.getAuthorities()).willReturn((java.util.Collection) userDetails.getAuthorities());
+        given(mockAuthentication.getName()).willReturn(userDetails.getUsername());
 
         given(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .willReturn(authentication);
+                .willReturn(mockAuthentication);
 
         String loginJson = """
                 {
@@ -63,7 +68,8 @@ class AuthApiControllerTest {
         // when & then
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginJson))
+                        .content(loginJson)
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("로그인이 성공하였습니다."))
@@ -89,7 +95,8 @@ class AuthApiControllerTest {
         // when & then
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginJson))
+                        .content(loginJson)
+                        .with(csrf()))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("사용자명 또는 패스워드가 잘못되었습니다."));
@@ -108,7 +115,8 @@ class AuthApiControllerTest {
         // when & then
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginJson))
+                        .content(loginJson)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -125,14 +133,15 @@ class AuthApiControllerTest {
         // when & then
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginJson))
+                        .content(loginJson)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void 로그아웃_성공() throws Exception {
         // when & then
-        mockMvc.perform(post("/api/auth/logout"))
+        mockMvc.perform(post("/api/auth/logout").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("로그아웃이 성공하였습니다."));

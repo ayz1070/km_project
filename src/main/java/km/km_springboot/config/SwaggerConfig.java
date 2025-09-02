@@ -19,7 +19,6 @@ public class SwaggerConfig {
                         .description("Korea Markers Spring Boot 애플리케이션의 REST API 문서")
                         .contact(new Contact()
                                 .name("Korea Markers")
-                                .email("admin@koreamarkers.com")
                                 .url("https://www.koreamarkers.com"))
                         .license(new License()
                                 .name("Korea Markers License")

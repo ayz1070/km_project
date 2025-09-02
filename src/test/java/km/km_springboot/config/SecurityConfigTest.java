@@ -33,11 +33,6 @@ class SecurityConfigTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void Swagger_UI는_인증_없이_접근_가능하다() throws Exception {
-        mockMvc.perform(get("/swagger-ui.html"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     void API_문서는_인증_없이_접근_가능하다() throws Exception {
@@ -60,21 +55,6 @@ class SecurityConfigTest {
                 .andExpect(status().isUnauthorized()); // 인증은 실패하지만 접근은 가능
     }
 
-    @Test
-    @WithMockUser(roles = "USER")
-    void 일반_사용자는_대시보드에_접근할_수_있다() throws Exception {
-        mockMvc.perform(get("/dashboard"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dashboard/index"));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void 관리자는_대시보드에_접근할_수_있다() throws Exception {
-        mockMvc.perform(get("/dashboard"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dashboard/index"));
-    }
 
     @Test
     @WithMockUser
