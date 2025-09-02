@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KOREA MARKERS</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,14 +15,16 @@
 
     <style>
         :root {
-            --primary-navy: #1a365d;
-            --primary-blue: #2b77ad;
-            --light-gray: #f5f7fa;
-            --dark-gray: #4a5568;
-            --white: #ffffff;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --border-light: #e2e8f0;
+            --km-navy: #1f2937;
+            --km-dark-blue: #374151;
+            --km-blue: #4f46e5;
+            --km-light-blue: #e0e7ff;
+            --km-gray: #6b7280;
+            --km-light-gray: #f9fafb;
+            --km-border: #e5e7eb;
+            --km-white: #ffffff;
+            --km-text-dark: #111827;
+            --km-text-light: #6b7280;
         }
 
         * {
@@ -35,213 +36,289 @@
         body {
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--white);
+            color: var(--km-text-dark);
+            background-color: var(--km-white);
         }
 
         /* Header Styles */
         .header {
-            background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
-            width: 100%;
+            background: var(--km-white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
             top: 0;
             z-index: 1000;
+            padding: 0;
         }
 
         .navbar {
-            padding: 1rem 0;
+            padding: 0.75rem 0;
+            min-height: 60px;
         }
 
         .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-navy) !important;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--km-navy) !important;
             text-decoration: none;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
         }
 
         .navbar-nav .nav-link {
-            color: var(--text-dark) !important;
-            font-weight: 500;
-            padding: 0.5rem 1.5rem !important;
-            transition: color 0.3s ease;
+            color: var(--km-text-dark) !important;
+            font-weight: 400;
+            font-size: 0.95rem;
+            padding: 0.5rem 1.2rem !important;
+            transition: color 0.2s ease;
         }
 
         .navbar-nav .nav-link:hover {
-            color: var(--primary-blue) !important;
+            color: var(--km-blue) !important;
+        }
+
+        .contact-info {
+            font-size: 0.85rem;
+            color: var(--km-gray);
+            margin-left: auto;
         }
 
         /* Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
-            min-height: 100vh;
+            background: linear-gradient(rgba(31, 41, 55, 0.6), rgba(31, 41, 55, 0.6)), 
+                        url('/images/main_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 50vh;
             display: flex;
             align-items: center;
+            justify-content: center;
             position: relative;
-            color: var(--white);
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(26, 54, 93, 0.8);
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
+            color: var(--km-white);
             text-align: center;
         }
 
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
+        .hero-content h1 {
+            font-size: 3.2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
             line-height: 1.2;
+            text-align: center;
         }
 
-        .hero-subtitle {
-            font-size: 1.2rem;
-            font-weight: 300;
+        .hero-content .tagline {
+            font-size: 1.1rem;
+            font-weight: 400;
             margin-bottom: 2rem;
             opacity: 0.9;
+            text-align: center;
         }
 
-        /* Business Sections */
-        .business-section {
+        .hero-content  {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--km-white);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* About Section */
+        .about-section {
             padding: 5rem 0;
-            background: var(--light-gray);
+            background: var(--km-white);
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
 
         .section-title h2 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--primary-navy);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--km-navy);
             margin-bottom: 1rem;
         }
 
-        .section-title p {
-            font-size: 1.1rem;
-            color: var(--text-light);
+        .section-title .subtitle {
+            font-size: 1rem;
+            color: var(--km-gray);
         }
 
-        .business-card {
-            background: var(--white);
-            padding: 2.5rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* Smart Cards Section */
+        .smart-section {
+            padding: 4rem 0;
+            background: var(--km-light-gray);
+        }
+
+        .smart-card {
+            background: var(--km-white);
+            padding: 2.5rem 2rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
             height: 100%;
+            border-left: 3px solid var(--km-blue);
         }
 
-        .business-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        .smart-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
         }
 
-        .business-card .icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-blue);
+        .smart-card h4 {
+            color: var(--km-navy);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .smart-card p {
+            color: var(--km-text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .smart-answer { border-left-color: #ef4444; }
+        .smart-bridge { border-left-color: #3b82f6; }
+        .smart-together { border-left-color: #10b981; }
+
+        /* Business Areas */
+        .business-areas {
+            padding: 4rem 0;
+            background: var(--km-white);
+        }
+
+        .business-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--km-light-gray);
+            border-radius: 5px;
+            transition: background 0.2s ease;
+        }
+
+        .business-item:hover {
+            background: #f0f9ff;
+        }
+
+        .business-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--km-blue);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
         }
 
-        .business-card .icon i {
-            font-size: 1.5rem;
-            color: var(--white);
+        .business-icon i {
+            color: var(--km-white);
+            font-size: 1.2rem;
         }
 
-        .business-card h4 {
-            color: var(--primary-navy);
+        .business-content h5 {
+            color: var(--km-navy);
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
-        .business-card p {
-            color: var(--text-light);
-            line-height: 1.6;
+        .business-content p {
+            color: var(--km-gray);
+            font-size: 0.9rem;
+            margin: 0;
         }
 
         /* User Info Section */
         .user-info-section {
             padding: 4rem 0;
-            background: var(--white);
+            background: var(--km-light-blue);
         }
 
-        .info-card {
-            background: var(--light-gray);
+        .user-card {
+            background: var(--km-white);
             padding: 2rem;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary-blue);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
 
-        .info-card h5 {
-            color: var(--primary-navy);
+        .user-card h5 {
+            color: var(--km-navy);
             font-weight: 600;
             margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--km-light-blue);
+            padding-bottom: 0.5rem;
         }
 
-        .info-item {
+        .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-light);
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--km-border);
         }
 
-        .info-item:last-child {
+        .info-row:last-child {
             border-bottom: none;
         }
 
         .info-label {
             font-weight: 500;
-            color: var(--text-dark);
+            color: var(--km-text-dark);
         }
 
         .info-value {
-            color: var(--text-light);
+            color: var(--km-gray);
+            font-weight: 400;
         }
 
         /* Footer */
         .footer {
-            background: var(--primary-navy);
-            color: var(--white);
-            padding: 3rem 0;
+            background: var(--km-navy);
+            color: var(--km-white);
+            padding: 2rem 0;
             text-align: center;
         }
 
         .footer p {
             margin: 0;
-            font-weight: 300;
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
+            .hero-content h1 {
+                font-size: 2.2rem;
             }
             
-            .hero-subtitle {
-                font-size: 1rem;
+            .hero-content .best-tech {
+                font-size: 1.8rem;
             }
             
             .section-title h2 {
-                font-size: 2rem;
+                font-size: 1.6rem;
             }
             
-            .business-card {
-                margin-bottom: 2rem;
+            .smart-card, .user-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -251,7 +328,9 @@
     <header class="header">
         <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <a class="navbar-brand" href="#">KOREA MARKERS</a>
+                <a class="navbar-brand" href="#">
+                    <img src="/images/logo.png" alt="KOREA MARKERS Logo">
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -270,7 +349,10 @@
                             <a class="nav-link" href="#resources">자료실</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav">
+                    <div class="contact-info d-none d-lg-block">
+                        <i class="bi bi-telephone"></i> 연락처
+                    </div>
+                    <ul class="navbar-nav ms-3">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle me-1"></i>
@@ -292,78 +374,111 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">혁신적인 기술로<br>미래를 이끌어가는</h1>
-                <p class="hero-subtitle">
-                    <strong th:text="${user.fullName}">사용자</strong>님, KOREA MARKERS에 오신 것을 환영합니다.<br>
-                    최첨단 기술과 전문성으로 고객의 성공을 지원합니다.
-                </p>
+        <div class="hero-content">
+            <h1 class="best-tech">
+                안녕하세요, <strong th:text="${user.fullName}">사용자</strong>님
+            </h1>
+
+            <div class="tagline">
+                KOREA MARKERS 입니다.
             </div>
         </div>
     </section>
 
-    <!-- Business Section -->
-    <section class="business-section" id="business">
+    <!-- About Section -->
+    <section class="about-section" id="company">
         <div class="container">
             <div class="section-title">
-                <h2>주요 사업 분야</h2>
-                <p>다양한 산업 분야에서 전문적인 솔루션을 제공합니다</p>
+                <h2>회사소개</h2>
+                <p class="subtitle">KOREA MARKERS는 첨단 기술을 바탕으로 고객에게 최상의 서비스를 제공합니다</p>
             </div>
+            <div class="row text-center">
+                <div class="col-12">
+                    <p style="font-size: 1.1rem; color: var(--km-gray); line-height: 1.8;">
+                        저희는 지속적인 연구개발을 통해 혁신적인 솔루션을 창출하며,<br>
+                        고객의 성공이 곧 저희의 성공이라는 신념으로 최선을 다하고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Smart Section -->
+    <section class="smart-section">
+        <div class="container">
             <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="business-card">
-                        <div class="icon">
-                            <i class="bi bi-cpu"></i>
-                        </div>
-                        <h4>시스템 통합</h4>
-                        <p>최신 기술을 바탕으로 한 시스템 통합 솔루션을 제공하며, 고객의 비즈니스 효율성을 극대화합니다.</p>
+                <div class="col-lg-4">
+                    <div class="smart-card smart-answer">
+                        <h4>Smart Answer</h4>
+                        <p>고객의 다양한 요구사항에 대한 스마트한 답변과 솔루션을 제공합니다. 빠르고 정확한 응답으로 비즈니스 효율성을 높입니다.</p>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="business-card">
-                        <div class="icon">
+                <div class="col-lg-4">
+                    <div class="smart-card smart-bridge">
+                        <h4>Smart Bridge</h4>
+                        <p>서로 다른 시스템과 플랫폼을 연결하는 스마트한 브리지 역할을 수행합니다. 원활한 데이터 흐름과 통합을 보장합니다.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="smart-card smart-together">
+                        <h4>Smart Together</h4>
+                        <p>고객과 함께 성장하는 파트너십을 구축합니다. 협력을 통해 더 큰 가치를 창출하고 미래를 함께 개척해 나갑니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Areas -->
+    <section class="business-areas" id="business">
+        <div class="container">
+            <div class="section-title">
+                <h2>주요사업</h2>
+                <p class="subtitle">다양한 분야에서 전문적인 기술력을 바탕으로 고객에게 최적화된 솔루션을 제공합니다</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="business-item">
+                        <div class="business-icon">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <div class="business-content">
+                            <h5>시스템 통합</h5>
+                            <p>복잡한 시스템 환경에서의 통합 솔루션 제공</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="business-item">
+                        <div class="business-icon">
                             <i class="bi bi-shield-check"></i>
                         </div>
-                        <h4>보안 솔루션</h4>
-                        <p>강력한 보안 시스템으로 고객의 중요한 데이터와 시스템을 안전하게 보호합니다.</p>
+                        <div class="business-content">
+                            <h5>보안 솔루션</h5>
+                            <p>차세대 보안 기술을 활용한 안전한 IT 환경 구축</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="business-card">
-                        <div class="icon">
+                <div class="col-lg-6 col-md-6">
+                    <div class="business-item">
+                        <div class="business-icon">
                             <i class="bi bi-cloud-arrow-up"></i>
                         </div>
-                        <h4>클라우드 서비스</h4>
-                        <p>안정적이고 확장 가능한 클라우드 인프라를 통해 비즈니스 연속성을 보장합니다.</p>
+                        <div class="business-content">
+                            <h5>클라우드 서비스</h5>
+                            <p>유연하고 확장 가능한 클라우드 인프라 서비스</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="business-card">
-                        <div class="icon">
+                <div class="col-lg-6 col-md-6">
+                    <div class="business-item">
+                        <div class="business-icon">
                             <i class="bi bi-graph-up-arrow"></i>
                         </div>
-                        <h4>데이터 분석</h4>
-                        <p>빅데이터와 AI 기술을 활용하여 비즈니스 인사이트를 제공하고 의사결정을 지원합니다.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="business-card">
-                        <div class="icon">
-                            <i class="bi bi-phone"></i>
+                        <div class="business-content">
+                            <h5>데이터 분석</h5>
+                            <p>빅데이터와 AI를 활용한 비즈니스 인텔리전스</p>
                         </div>
-                        <h4>모바일 솔루션</h4>
-                        <p>모바일 환경에 최적화된 애플리케이션과 서비스를 개발하고 제공합니다.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="business-card">
-                        <div class="icon">
-                            <i class="bi bi-headset"></i>
-                        </div>
-                        <h4>기술 지원</h4>
-                        <p>전문적인 기술 지원팀이 24/7 고객 서비스를 제공하여 안정적인 운영을 보장합니다.</p>
                     </div>
                 </div>
             </div>
@@ -371,47 +486,51 @@
     </section>
 
     <!-- User Info Section -->
-    <section class="user-info-section" id="company">
+    <section class="user-info-section" id="contact">
         <div class="container">
             <div class="section-title">
                 <h2>사용자 정보</h2>
-                <p>현재 로그인된 사용자의 상세 정보입니다</p>
+                <p class="subtitle">현재 로그인된 사용자의 상세 정보입니다</p>
             </div>
             <div class="row g-4">
                 <div class="col-lg-6">
-                    <div class="info-card">
+                    <div class="user-card">
                         <h5><i class="bi bi-person-vcard me-2"></i>계정 정보</h5>
-                        <div class="info-item">
+                        <div class="info-row">
                             <span class="info-label">사용자명</span>
                             <span class="info-value" th:text="${user.username}">username</span>
                         </div>
-                        <div class="info-item">
+                        <div class="info-row">
                             <span class="info-label">이메일</span>
                             <span class="info-value" th:text="${user.email}">email@example.com</span>
                         </div>
-                        <div class="info-item">
+                        <div class="info-row">
                             <span class="info-label">권한</span>
                             <span class="info-value" th:text="${user.role.name}">USER</span>
                         </div>
-                        <div class="info-item">
+                        <div class="info-row">
                             <span class="info-label">계정 상태</span>
-                            <span class="info-value" th:text="${user.status.description}">활성</span>
+                            <span class="info-value" th:text="${user.status}">ACTIVE</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="info-card">
+                    <div class="user-card">
                         <h5><i class="bi bi-clock-history me-2"></i>접속 정보</h5>
-                        <div class="info-item">
+                        <div class="info-row">
                             <span class="info-label">현재 시간</span>
                             <span class="info-value" th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2025-01-01 12:00:00</span>
                         </div>
-                        <div class="info-item">
+                        <div class="info-row">
                             <span class="info-label">마지막 로그인</span>
                             <span class="info-value">
                                 <span th:if="${user.lastLoginAt}" th:text="${#temporals.format(user.lastLoginAt, 'yyyy-MM-dd HH:mm:ss')}">2025-01-01 11:30:00</span>
                                 <span th:unless="${user.lastLoginAt}">첫 로그인</span>
                             </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">전체 이름</span>
+                            <span class="info-value" th:text="${user.fullName}">사용자</span>
                         </div>
                     </div>
                 </div>
