@@ -70,4 +70,26 @@ class AuthControllerTest {
                 .andExpect(view().name("auth/login"))
                 .andExpect(model().attributeExists("message"));
     }
+
+    @Test
+    void 인증된_사용자가_로그아웃_페이지를_볼_수_있다() throws Exception {
+        // given
+        given(authService.isAuthenticated()).willReturn(true);
+
+        // when & then
+        mockMvc.perform(get("/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/logout"));
+    }
+
+    @Test
+    void 인증되지_않은_사용자가_로그아웃_페이지_접근시_로그인_페이지로_리디렉션된다() throws Exception {
+        // given
+        given(authService.isAuthenticated()).willReturn(false);
+
+        // when & then
+        mockMvc.perform(get("/auth/logout"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/auth/login"));
+    }
 }

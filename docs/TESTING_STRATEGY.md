@@ -1,56 +1,79 @@
-# 테스트 전략
+# KM Spring Boot 테스트 전략
 
-이 문서는 KM Spring Boot 프로젝트의 테스트 전략을 정의합니다. 고품질의 소프트웨어를 유지하고 안정적인 기능을 보장하기 위해 체계적인 테스트는 필수적입니다.
+Spring Security 기반 인증/인가 시스템과 Bootstrap UI를 포함한 웹 애플리케이션의 품질을 보장하는 테스트 전략입니다.
 
-## 1. 테스트 목표
+## 📋 테스트 목표
 
-- **정확성 검증**: 모든 기능이 요구사항에 맞게 정확하게 동작하는지 확인합니다.
-- **회귀 방지**: 새로운 코드 변경이 기존 기능에 영향을 주지 않는다는 것을 보장합니다.
-- **리팩토링 지원**: 안정적인 테스트 코드를 기반으로 안심하고 코드를 리팩토링할 수 있는 환경을 구축합니다.
-- **문서화**: 테스트 코드를 통해 코드의 동작 방식을 명확하게 문서화합니다.
+- **보안 검증**: Spring Security 인증/인가 로직의 정확한 동작 확인
+- **기능 검증**: 로그인/로그아웃, 사용자 관리 등 핵심 기능의 정확성 검증
+- **회귀 방지**: 새로운 코드 변경이 기존 기능에 영향을 주지 않음을 보장
+- **리팩토링 지원**: 안정적인 테스트 기반으로 코드 개선 환경 구축
+- **UI 검증**: Thymeleaf 템플릿과 Bootstrap 컴포넌트의 렌더링 확인
 
-## 2. 테스트 계층
+## 🏗️ 테스트 계층 구조
 
-프로젝트는 계층형 아키텍처를 따르며, 각 계층에 맞는 테스트 전략을 사용합니다.
-
-### 2.1. Controller (Web Layer) 테스트
-
-- **목표**: API 엔드포인트의 요청/응답, 데이터 변환(DTO), 유효성 검사(Validation)를 테스트합니다.
-- **방법**: `@ExtendWith(MockitoExtension.class)`를 사용하여 Mockito 기반의 단위 테스트를 수행하고, `MockMvcBuilders.standaloneSetup()`을 통해 `MockMvc`를 수동으로 설정합니다. 이를 통해 웹 계층을 독립적으로 테스트합니다.
-- **도구**: `MockMvc`를 사용하여 HTTP 요청을 시뮬레이션하고, 응답을 검증합니다.
-- **의존성 관리**: 서비스 계층의 의존성은 `@Mock`과 `@InjectMocks`를 사용하여 Mock 객체로 주입합니다.
-
+### 1. Repository 테스트 (`@DataJpaTest`)
 ```java
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+@DataJpaTest
+class UserRepositoryTest {
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Test
+    void 사용자명으로_사용자_찾기() {
+        // when
+        Optional<User> foundUser = userRepository.findByUsername("admin");
+        
+        // then
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getUsername()).isEqualTo("admin");
+    }
+}
+```
 
-// Mockito 기반의 컨트롤러 단위 테스트
+### 2. Service 테스트 (`@SpringBootTest` + `@Transactional`)
+```java
+@SpringBootTest
+@Transactional
+class UserServiceTest {
+    @Autowired
+    private UserService userService;
+    
+    @Test
+    void 마지막_로그인_시간_업데이트() {
+        // given-when-then 패턴으로 비즈니스 로직 검증
+        User user = userRepository.findByUsername("admin").get();
+        LocalDateTime initialTime = user.getLastLoginAt();
+        
+        userService.updateLastLoginAt("admin");
+        
+        User updatedUser = userRepository.findByUsername("admin").get();
+        assertThat(updatedUser.getLastLoginAt()).isAfter(initialTime);
+    }
+}
+```
+
+### 3. Controller 테스트
+
+#### 단위 테스트 (`@ExtendWith(MockitoExtension.class)`)
+```java
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
-
     private MockMvc mockMvc;
-
-    @Mock // Mock 객체 생성
-    private AuthService authService;
-
-    @InjectMocks // Mock 객체를 주입할 컨트롤러 인스턴스 생성
-    private AuthController authController;
-
-    @BeforeEach // 각 테스트 실행 전 MockMvc 설정
+    
+    @Mock private AuthService authService;
+    @InjectMocks private AuthController authController;
+    
+    @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
     }
-
+    
     @Test
     void 인증되지_않은_사용자는_로그인_페이지를_볼_수_있다() throws Exception {
         // given
         given(authService.isAuthenticated()).willReturn(false);
-
+        
         // when & then
         mockMvc.perform(get("/auth/login"))
                 .andExpect(status().isOk())
@@ -59,79 +82,159 @@ class AuthControllerTest {
 }
 ```
 
-### 2.2. Service (Business Logic) 테스트
-
-- **목표**: 핵심 비즈니스 로직의 정확성을 검증합니다.
-- **방법**:
-    - **단위 테스트**: 순수한 비즈니스 로직을 테스트할 경우, Mockito를 사용한 JUnit 테스트를 진행합니다.
-    - **통합 테스트**: 데이터베이스와의 상호작용을 포함한 전체적인 서비스 흐름을 테스트할 경우, `@SpringBootTest`와 `@Transactional`을 사용합니다.
-- **의존성 관리**: Repository 계층의 의존성은 Mock 객체로 대체하거나, 통합 테스트 시 실제 DB(H2)를 사용합니다.
-
+### 4. Security 테스트 (`@WithMockUser`, `@WithUserDetails`)
 ```java
 @SpringBootTest
-@Transactional
-class UserServiceTest {
-
+@AutoConfigureMockMvc
+class SecurityConfigTest {
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    private MockMvc mockMvc;
+    
     @Test
-    void 마지막_로그인_시간_업데이트() {
-        // given
-        User user = userRepository.findByUsername("admin").get();
-        LocalDateTime initialLoginTime = user.getLastLoginAt();
-
-        // when
-        userService.updateLastLoginAt("admin");
-
-        // then
-        User updatedUser = userRepository.findByUsername("admin").get();
-        assertThat(updatedUser.getLastLoginAt()).isAfter(initialLoginTime);
+    void 인증되지_않은_사용자는_로그인_페이지로_리다이렉트된다() throws Exception {
+        mockMvc.perform(get("/dashboard"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/auth/login"));
+    }
+    
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void 관리자는_대시보드에_접근할_수_있다() throws Exception {
+        mockMvc.perform(get("/dashboard"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("dashboard/index"));
+    }
+    
+    @Test
+    @WithMockUser
+    void POST_요청시_CSRF_토큰_필요() throws Exception {
+        mockMvc.perform(post("/auth/logout"))
+                .andExpect(status().isForbidden());
+                
+        mockMvc.perform(post("/auth/logout").with(csrf()))
+                .andExpect(status().is3xxRedirection());
     }
 }
 ```
 
-### 2.3. Repository (Data Access) 테스트
-
-- **목표**: JPA 쿼리 및 데이터베이스와의 상호작용을 검증합니다.
-- **방법**: `@DataJpaTest`를 사용하여 데이터 접근 계층만 테스트합니다. 인메모리 데이터베이스(H2)를 사용하여 외부 환경의 영향을 받지 않습니다.
-- **특징**: `@DataJpaTest`는 기본적으로 `@Transactional`을 포함하므로, 각 테스트 후 데이터는 롤백됩니다.
-
+### 5. 통합 테스트 (End-to-End)
 ```java
-@DataJpaTest
-class UserRepositoryTest {
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = {
+    "spring.datasource.url=jdbc:h2:mem:testdb",
+    "spring.jpa.hibernate.ddl-auto=create-drop"
+})
+class LoginIntegrationTest {
     @Autowired
-    private UserRepository userRepository;
-
+    private TestRestTemplate restTemplate;
+    
     @Test
-    void 사용자명으로_사용자_찾기() {
-        // when
-        Optional<User> foundUser = userRepository.findByUsername("admin");
-
-        // then
-        assertThat(foundUser).isPresent();
-        assertThat(foundUser.get().getUsername()).isEqualTo("admin");
+    void 전체_로그인_플로우_테스트() {
+        // given: 로그인 페이지 접근
+        ResponseEntity<String> loginPage = restTemplate.getForEntity("/auth/login", String.class);
+        assertThat(loginPage.getStatusCode()).isEqualTo(HttpStatus.OK);
+        
+        // when: 올바른 자격증명으로 로그인
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("username", "admin");
+        form.add("password", "admin123");
+        
+        ResponseEntity<String> loginResponse = restTemplate.postForEntity("/auth/login", form, String.class);
+        
+        // then: 대시보드로 리다이렉트
+        assertThat(loginResponse.getStatusCode()).isEqualTo(HttpStatus.FOUND);
     }
 }
 ```
 
-## 3. 테스트 도구 및 프레임워크
+## 🛠️ 핵심 도구
 
-- **JUnit 5**: 테스트 작성을 위한 핵심 프레임워크입니다.
-- **Spring Boot Test**: Spring 애플리케이션 컨텍스트를 로드하여 통합 테스트를 지원합니다.
-- **Mockito**: 의존성을 가진 객체를 Mock(가짜) 객체로 만들어 테스트의 독립성을 보장합니다.
-- **AssertJ**: `assertThat`을 사용하여 가독성 높고 풍부한 표현의 검증문을 작성합니다.
-- **H2 Database**: 테스트 시 사용할 인메동작리 데이터베이스입니다.
+### 테스트 프레임워크
+- **JUnit 5**: 테스트 프레임워크의 기반
+- **Spring Boot Test**: 통합 테스트를 위한 Spring 컨텍스트 지원
+- **Mockito**: Mock 객체 생성 및 검증 (`@Mock`, `@InjectMocks`)
+- **AssertJ**: 유창한 API 검증 라이브러리 (`assertThat`)
 
-## 4. 테스트 명명 규칙
+### 웹 & 보안 테스트
+- **MockMvc**: HTTP 요청/응답 시뮬레이션
+- **TestRestTemplate**: REST API 통합 테스트
+- **Spring Security Test**: `@WithMockUser`, `@WithUserDetails`
+- **H2 Database**: 인메모리 테스트 데이터베이스
 
-- **클래스**: `[클래스명]Tests.java` (예: `UserServiceTests.java`)
-- **메소드**: `[테스트할_메소드명]_[상황]_[예상결과]` 형식의 한글 메소드명을 사용하여 테스트의 의도를 명확하게 표현합니다. (예: `회원가입_성공()`, `잘못된_정보로_로그인시_예외발생()`)
+## ⚙️ 테스트 설정
 
-## 5. 향후 계획
+### application-test.properties
+```properties
+# 테스트 전용 설정
+spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.sql.init.mode=never
+logging.level.org.springframework.security=DEBUG
+```
 
-현재 프로젝트에는 기본적인 `contextLoads()` 테스트만 존재합니다. 위에서 정의한 전략에 따라 각 계층별 테스트 코드를 점진적으로 추가하여 코드 커버리지를 높이고, 애플리케이션의 안정성을 확보해 나갈 계획입니다.
+### 커스텀 테스트 프로파일
+```java
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.properties")
+public @interface TestProfile {
+}
+```
+
+## 📊 품질 기준
+
+### 커버리지 목표
+- **라인 커버리지**: 80% 이상
+- **브랜치 커버리지**: 70% 이상
+- **보안 관련 코드**: 90% 이상
+
+### 우선순위
+1. **High**: Security, Controller, Service 핵심 로직
+2. **Medium**: Repository, Configuration
+3. **Low**: DTO, Entity, Utility
+
+## 📝 명명 규칙
+
+### 클래스 명명
+- **단위 테스트**: `[클래스명]Test.java` (예: `UserServiceTest.java`)
+- **통합 테스트**: `[기능명]IntegrationTest.java` (예: `LoginIntegrationTest.java`)
+- **보안 테스트**: `[기능명]SecurityTest.java` (예: `AuthSecurityTest.java`)
+
+### 메서드 명명 (BDD 스타일)
+- **패턴**: `[상황]_[행동]_[결과]` (한글 권장)
+- **예시**: `관리자가_로그인하면_대시보드에_접근할_수_있다()`
+- **예외 테스트**: `잘못된_비밀번호로_로그인하면_예외가_발생한다()`
+
+## 🚀 실행 계획
+
+### Phase 1: 기본 테스트 인프라
+- [x] 기본 contextLoads() 테스트
+- [ ] TestProfile 및 설정
+- [ ] Repository 계층 테스트
+
+### Phase 2: 핵심 비즈니스 로직
+- [ ] UserService 테스트
+- [ ] AuthService 테스트
+- [ ] DataInitializer 테스트
+
+### Phase 3: 웹 계층 및 보안
+- [ ] AuthController 테스트
+- [ ] DashboardController 테스트
+- [ ] Spring Security 통합 테스트
+
+### Phase 4: 통합 테스트
+- [ ] 로그인 플로우 End-to-End 테스트
+- [ ] 권한 기반 접근 제어 테스트
+- [ ] UI 렌더링 테스트
+
+## 💡 핵심 포인트
+
+- **Security 중심**: 인증/인가 테스트가 최우선
+- **계층별 분리**: 각 계층에 맞는 테스트 도구 사용
+- **통합 테스트**: 실제 사용자 시나리오 검증
+- **BDD 스타일**: Given-When-Then 패턴으로 명확한 의도 표현
+- **자동화**: Gradle + Jacoco로 커버리지 측정
+
+이 전략을 바탕으로 실제 테스트 코드를 단계적으로 구현할 수 있습니다.
